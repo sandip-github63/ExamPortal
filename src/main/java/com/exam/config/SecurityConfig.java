@@ -42,8 +42,8 @@ public class SecurityConfig {
 		System.out.println("inside securityfilterchain");
 
 		return http.csrf().disable().authorizeHttpRequests()
-				.requestMatchers("/user/", "/user/create", "/user/authenticate").permitAll().and()
-				.authorizeHttpRequests().requestMatchers("/user/**").authenticated().and().sessionManagement()
+				.requestMatchers("/user/", "/user/create", "/user/authenticate", "user/currentLoginUser").permitAll()
+				.and().authorizeHttpRequests().requestMatchers("/user/**").authenticated().and().sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 				.authenticationProvider(authenticationProvider())
 				.addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class).build();
@@ -76,5 +76,7 @@ public class SecurityConfig {
 
 		return config.getAuthenticationManager();
 	}
+
+	// cross origin config
 
 }

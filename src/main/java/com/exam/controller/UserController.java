@@ -1,7 +1,10 @@
 package com.exam.controller;
 
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,6 +13,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,6 +30,9 @@ import com.exam.model.User;
 import com.exam.model.UserRole;
 import com.exam.request.AuthRequest;
 import com.exam.response.Message;
+import com.exam.response.Message2;
+import com.exam.response.TokenResponse;
+import com.exam.response.UserWithAuthoritiesDTO;
 import com.exam.service.JwtService;
 import com.exam.service.UserService;
 
@@ -108,10 +116,11 @@ public class UserController {
 
 	}
 
-//this handler is responsible to take username and password from client and generate token
+	// this handler is responsible to take username and password from client and
+	// generate token
 
 	@PostMapping("/authenticate")
-	public String authenticateAndGetToken(@RequestBody AuthRequest request) {
+	public ResponseEntity<TokenResponse> authenticateAndGetToken(@RequestBody AuthRequest request) {
 
 		Authentication authenticate = authenticationManager
 				.authenticate(new UsernamePasswordAuthenticationToken(request.getUserName(), request.getPassword()));
@@ -124,12 +133,46 @@ public class UserController {
 
 		if (authenticate.isAuthenticated()) {
 
-			return jwtService.generateToken(request.getUserName());
+			String generateToken = jwtService.generateToken(request.getUserName());
+			TokenResponse response = new TokenResponse(generateToken);
+			return ResponseEntity.ok(response);
 
 		} else {
 			throw new UsernameNotFoundException("invalid username !!");
 		}
 
+	}
+
+	// Get current logged user detail
+
+	@GetMapping("/currentLoginUser")
+	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+	public ResponseEntity<?> getCurrentUser() {
+
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+		if (authentication != null && authentication.isAuthenticated()
+				&& !authentication.getPrincipal().equals("anonymousUser")) {
+			String currentUsername = authentication.getName();
+			// get user
+			User currentUser = userService.getUserByUserName(currentUsername);
+
+			// get user authority
+			Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+
+			List<String> authorityNames = authorities.stream().map(GrantedAuthority::getAuthority)
+					.collect(Collectors.toList());
+
+			UserWithAuthoritiesDTO userWithAuthorities = new UserWithAuthoritiesDTO();
+			userWithAuthorities.setUser(currentUser);
+			userWithAuthorities.setAuthorities(authorityNames);
+
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(new Message2("Current user retrieved successfully", "200", userWithAuthorities));
+		} else {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+					.body(new Message("No user is currently logged in", "401"));
+		}
 	}
 
 }
