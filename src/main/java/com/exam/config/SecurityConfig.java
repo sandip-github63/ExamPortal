@@ -43,8 +43,8 @@ public class SecurityConfig {
 
 		return http.csrf().disable().authorizeHttpRequests()
 				.requestMatchers("/user/", "/user/create", "/user/authenticate", "user/currentLoginUser").permitAll()
-				.and().authorizeHttpRequests().requestMatchers("/user/**").authenticated().and().sessionManagement()
-				.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+				.and().authorizeHttpRequests().requestMatchers("/user/**", "/category/**").authenticated().and()
+				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 				.authenticationProvider(authenticationProvider())
 				.addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class).build();
 
