@@ -27,6 +27,10 @@ public class QuestionServiceImpl implements QuestionService {
 	@Override
 	public Question updateQuestion(Question question) {
 		// TODO Auto-generated method stub
+
+		Quiz quiz = this.questionRepository.findById(question.getQuesId()).get().getQuiz();
+		question.setQuiz(quiz);
+
 		return this.questionRepository.save(question);
 
 	}
@@ -47,7 +51,8 @@ public class QuestionServiceImpl implements QuestionService {
 	public void deleteQuestion(Long questionId) {
 		// TODO Auto-generated method stub
 		Question d = new Question();
-		d.setQuizId(questionId);
+		// d.setQuizId(questionId);
+		d.setQuesId(questionId);
 
 		this.questionRepository.delete(d);
 

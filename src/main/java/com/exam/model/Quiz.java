@@ -46,6 +46,14 @@ public class Quiz {
 	@JsonIgnore
 	private Set<Question> questions = new HashSet<>();
 
+	public Set<Question> getQuestions() {
+		return questions;
+	}
+
+	public void setQuestions(Set<Question> questions) {
+		this.questions = questions;
+	}
+
 	public Category getCategory() {
 		return category;
 	}
@@ -115,6 +123,13 @@ public class Quiz {
 	public Quiz() {
 		super();
 		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public String toString() {
+		return "Quiz [quizId=" + quizId + ", title=" + title + ", description=" + description + ", maxMarks=" + maxMarks
+				+ ", numberOfQuestions=" + numberOfQuestions + ", active=" + active + ", category=" + category
+				+ ", questions=" + questions + "]";
 	}
 
 }

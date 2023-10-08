@@ -6,9 +6,12 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.exam.model.Category;
 import com.exam.model.Quiz;
 import com.exam.repository.QuizRepository;
 import com.exam.service.QuizService;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class QuizServiceImpl implements QuizService {
@@ -25,7 +28,16 @@ public class QuizServiceImpl implements QuizService {
 	@Override
 	public Quiz updateQuiz(Quiz quiz) {
 		// TODO Auto-generated method stub
+
+		// if request contain cId as null then it will update cId as null in table hence
+		// integrity remove
+
+		Category category = this.quizRepository.findById(quiz.getQuizId()).get().getCategory();
+
+		quiz.setCategory(category);
+
 		return this.quizRepository.save(quiz);
+
 	}
 
 	@Override
@@ -42,12 +54,14 @@ public class QuizServiceImpl implements QuizService {
 	}
 
 	@Override
+	@Transactional
 	public void deleteQuiz(Long quizId) {
-		// TODO Auto-generated method stub
-		Quiz q = new Quiz();
-		q.setQuizId(quizId);
 
-		this.quizRepository.delete(q);
+		Long cId = this.quizRepository.findCategoryIdByQuizId(quizId);
+
+		System.out.println("category id....." + cId);
+
+		this.quizRepository.deleteByQIdAndCId(quizId, cId);
 
 	}
 

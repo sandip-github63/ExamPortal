@@ -39,16 +39,16 @@ public class Question {
 	@JoinColumn(name = "quizId")
 	private Quiz quiz;
 
-	public Long getQuizId() {
+	public String getContent() {
+		return content;
+	}
+
+	public Long getQuesId() {
 		return quesId;
 	}
 
-	public void setQuizId(Long quesId) {
+	public void setQuesId(Long quesId) {
 		this.quesId = quesId;
-	}
-
-	public String getContent() {
-		return content;
 	}
 
 	public void setContent(String content) {
