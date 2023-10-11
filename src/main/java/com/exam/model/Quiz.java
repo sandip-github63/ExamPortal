@@ -38,7 +38,7 @@ public class Quiz {
 
 	private boolean active = false;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "cId")
 	private Category category;
 

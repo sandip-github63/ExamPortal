@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -30,7 +29,7 @@ public class Category {
 	@Column(length = 5000)
 	private String discription;
 
-	@OneToMany(mappedBy = "category", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
 	@JsonIgnore
 	private Set<Quiz> quizzes = new LinkedHashSet<>();
 
@@ -76,6 +75,12 @@ public class Category {
 		this.cId = cId;
 		this.title = title;
 		this.discription = discription;
+	}
+
+	@Override
+	public String toString() {
+		return "Category [cId=" + cId + ", title=" + title + ", discription=" + discription + ", quizzes=" + quizzes
+				+ "]";
 	}
 
 }

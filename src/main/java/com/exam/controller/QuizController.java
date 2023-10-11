@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.exam.model.Quiz;
+import com.exam.response.DeleteResponse;
 import com.exam.service.QuizService;
 
 @RestController
@@ -38,6 +39,8 @@ public class QuizController {
 	@PutMapping("/")
 	public ResponseEntity<?> updateQuiz(@RequestBody Quiz quiz) {
 
+		System.out.println(quiz);
+
 		return ResponseEntity.ok(quizService.updateQuiz(quiz));
 
 	}
@@ -59,7 +62,7 @@ public class QuizController {
 
 		this.quizService.deleteQuiz(quizId);
 
-		return ResponseEntity.ok("deleted :" + quizId);
+		return ResponseEntity.ok(new DeleteResponse("Deleted successfully", quizId));
 	}
 
 }
