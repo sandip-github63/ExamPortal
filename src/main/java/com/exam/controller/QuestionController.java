@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.exam.model.Question;
 import com.exam.model.Quiz;
+import com.exam.response.DeleteResponse;
 import com.exam.service.QuestionService;
 import com.exam.service.QuizService;
 
@@ -92,7 +93,8 @@ public class QuestionController {
 		try {
 
 			this.questionService.deleteQuestion(quesId);
-			return ResponseEntity.ok("deleted " + quesId);
+
+			return ResponseEntity.ok(new DeleteResponse("Deleted successfully", quesId));
 
 		} catch (Exception e) {
 

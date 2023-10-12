@@ -43,7 +43,7 @@ public class SecurityConfig {
 
 		return http.csrf().disable().authorizeHttpRequests()
 				.requestMatchers("/user/", "/user/create", "/user/authenticate", "user/currentLoginUser", "/category/",
-						"/quiz/**")
+						"/quiz/**", "/question/**", "/question/**")
 				.permitAll().and().authorizeHttpRequests()
 				.requestMatchers("/user/**", "/category/**", "/question/**", "/quiz/**").authenticated().and()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
