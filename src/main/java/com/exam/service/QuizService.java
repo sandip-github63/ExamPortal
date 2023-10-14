@@ -1,7 +1,9 @@
 package com.exam.service;
 
+import java.util.List;
 import java.util.Set;
 
+import com.exam.model.Category;
 import com.exam.model.Quiz;
 
 public interface QuizService {
@@ -15,5 +17,7 @@ public interface QuizService {
 	public Quiz getQuiz(Long quizId);
 
 	public void deleteQuiz(Long quizId);
+
+	public List<Quiz> getQuzzesOfCategory(Category c);
 
 }

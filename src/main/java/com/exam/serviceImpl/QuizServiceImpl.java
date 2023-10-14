@@ -1,6 +1,7 @@
 package com.exam.serviceImpl;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -75,6 +76,12 @@ public class QuizServiceImpl implements QuizService {
 
 		this.quizRepository.deleteById(quizId);
 
+	}
+
+	@Override
+	public List<Quiz> getQuzzesOfCategory(Category c) {
+		// TODO Auto-generated method stub
+		return this.quizRepository.findBycategory(c);
 	}
 
 }

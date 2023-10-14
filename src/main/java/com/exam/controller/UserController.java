@@ -61,8 +61,8 @@ public class UserController {
 	public ResponseEntity<?> createUser(@RequestBody User user) {
 
 		Role r1 = new Role();
-		r1.setRoleName("ROLE_ADMIN");
-		r1.setRoleId(45L);
+		r1.setRoleName("ROLE_USER");
+		r1.setRoleId(46L);
 
 		Set<UserRole> userRoleSet = new HashSet<>();
 
@@ -85,7 +85,7 @@ public class UserController {
 	}
 
 	@GetMapping("/{username}")
-	@PreAuthorize("hasAuthority('ROLE_ADMIN')") // role base authorization
+	// @PreAuthorize("hasAuthority('ROLE_ADMIN')") // role base authorization
 	public ResponseEntity<?> getUser(@PathVariable("username") String username) {
 
 		User user = service.getUserByUserName(username);
@@ -146,7 +146,7 @@ public class UserController {
 	// Get current logged user detail
 
 	@GetMapping("/currentLoginUser")
-	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+//	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 	public ResponseEntity<?> getCurrentUser() {
 
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

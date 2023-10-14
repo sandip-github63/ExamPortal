@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.exam.model.Category;
 import com.exam.model.Quiz;
 import com.exam.response.DeleteResponse;
 import com.exam.service.QuizService;
@@ -63,6 +64,16 @@ public class QuizController {
 		this.quizService.deleteQuiz(quizId);
 
 		return ResponseEntity.ok(new DeleteResponse("Deleted successfully", quizId));
+	}
+
+	@GetMapping("/category/{cId}")
+	public ResponseEntity<?> getQuzzesOfCategory(@PathVariable("cId") Long cId) {
+
+		Category c = new Category();
+		c.setcId(cId);
+
+		return ResponseEntity.ok(this.quizService.getQuzzesOfCategory(c));
+
 	}
 
 }
