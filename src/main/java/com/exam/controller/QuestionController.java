@@ -51,10 +51,10 @@ public class QuestionController {
 
 	}
 
-	// get all question of any quid
+	// get all question of any quid show only user dashboard not admin dashboard
 
 	@GetMapping("/quiz/{qId}")
-	public ResponseEntity<?> getQuestionOfQuiz(@PathVariable("qId") Long qId) {
+	public ResponseEntity<?> getQuestionOfQuizWithLimit(@PathVariable("qId") Long qId) {
 
 		// how much question you want to get ? ans->get question according to quiz's
 		// numberOfQuestions
@@ -67,7 +67,7 @@ public class QuestionController {
 
 		if (list.size() > quiz.getNumberOfQuestions()) {
 
-			list = list.subList(0, quiz.getNumberOfQuestions() + 1);
+			list = list.subList(0, quiz.getNumberOfQuestions());
 
 		}
 
@@ -75,6 +75,19 @@ public class QuestionController {
 
 		return ResponseEntity.ok(list);
 
+	}
+
+	// get all question of quiz
+
+	@GetMapping("/quiz/all/{qId}")
+	public ResponseEntity<?> getQuestionOfQuiz(@PathVariable("qId") Long qId) {
+
+		Quiz q = new Quiz();
+		q.setQuizId(qId);
+
+		Set<Question> questionsOfQuiz = this.questionService.getQuestionsOfQuiz(q);
+
+		return ResponseEntity.ok(questionsOfQuiz);
 	}
 
 	// get single question

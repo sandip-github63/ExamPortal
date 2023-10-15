@@ -1,5 +1,7 @@
 package com.exam.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -73,6 +75,26 @@ public class QuizController {
 		c.setcId(cId);
 
 		return ResponseEntity.ok(this.quizService.getQuzzesOfCategory(c));
+
+	}
+
+	// get Active Quizzes
+
+	@GetMapping("/active")
+	public ResponseEntity<?> getActiveQuizzes() {
+		List<Quiz> activeQuizzes = this.quizService.getActiveQuizzes();
+
+		return ResponseEntity.ok(activeQuizzes);
+
+	}
+
+	@GetMapping("category/active/{cId}")
+	public ResponseEntity<?> getActiveQuizzesOfCategory(@PathVariable("cId") Long cId) {
+		Category c = new Category();
+		c.setcId(cId);
+
+		List<Quiz> activeQuizOfCategory = this.quizService.getActiveQuizOfCategory(c);
+		return ResponseEntity.ok(activeQuizOfCategory);
 
 	}
 
