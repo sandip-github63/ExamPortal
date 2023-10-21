@@ -165,4 +165,19 @@ public class User {
 		System.out.println("inside user default construction....");
 	}
 
+	public User(String firstName, String lastName, String email, String userName, String phone, boolean enable,
+			String about, String password, String profile) {
+		super();
+		System.out.println("inside user parametrized constructor...");
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.email = email;
+		this.userName = userName;
+		this.phone = phone;
+		this.enable = enable;
+		this.about = about;
+		this.password = password;
+		this.profile = profile;
+	}
+
 }

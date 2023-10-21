@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "question")
@@ -35,9 +36,20 @@ public class Question {
 	@Column(length = 2000)
 	private String answer;
 
+	@Transient
+	private String givenAnswer;
+
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "quizId")
 	private Quiz quiz;
+
+	public String getGivenAnswer() {
+		return givenAnswer;
+	}
+
+	public void setGivenAnswer(String givenAnswer) {
+		this.givenAnswer = givenAnswer;
+	}
 
 	public String getContent() {
 		return content;

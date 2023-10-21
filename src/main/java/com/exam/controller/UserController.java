@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -29,11 +28,13 @@ import com.exam.model.Role;
 import com.exam.model.User;
 import com.exam.model.UserRole;
 import com.exam.request.AuthRequest;
+import com.exam.request.UserDto;
 import com.exam.response.Message;
 import com.exam.response.Message2;
 import com.exam.response.TokenResponse;
 import com.exam.response.UserWithAuthoritiesDTO;
 import com.exam.service.JwtService;
+import com.exam.service.RoleService;
 import com.exam.service.UserService;
 
 @RestController
@@ -57,12 +58,44 @@ public class UserController {
 	@Autowired
 	UserService service;
 
-	@PostMapping("/")
-	public ResponseEntity<?> createUser(@RequestBody User user) {
+	@Autowired
+	RoleService roleService;
 
-		Role r1 = new Role();
-		r1.setRoleName("ROLE_USER");
-		r1.setRoleId(46L);
+	@PostMapping("/")
+	public ResponseEntity<?> createUser(@RequestBody UserDto userReq) {
+
+		User user = new User(userReq.getFirstName(), userReq.getLastName(), userReq.getEmail(), userReq.getUserName(),
+				userReq.getPhone(), userReq.isEnable(), userReq.getAbout(), userReq.getPassword(),
+				userReq.getProfile());
+
+		System.out.println("user Role  is .. :" + userReq.getRole());
+
+		Role r1;
+
+		if (userReq.getRole() != null && userReq.getRole().equals("ROLE_ADMIN")) {
+			// get ROLE ADMIN OBJECT
+
+			System.out.println("user role is ........:" + userReq.getRole());
+
+			r1 = this.roleService.getRole(userReq.getRole());
+
+			System.out.println("User role ID :" + r1.getRoleId());
+
+		} else if (userReq.getRole() != null && userReq.getRole().equals("ROLE_USER")) {
+
+			System.out.println("user role is ........:" + userReq.getRole());
+
+			r1 = this.roleService.getRole(userReq.getRole());
+
+			System.out.println("User role ID :" + r1.getRoleId());
+
+		} else {
+			r1 = new Role();
+
+			r1.setRoleName("ROLE_USER");
+			r1.setRoleId(46L);
+
+		}
 
 		Set<UserRole> userRoleSet = new HashSet<>();
 
@@ -101,7 +134,7 @@ public class UserController {
 	}
 
 	@DeleteMapping("/{userid}")
-	@PreAuthorize("hasAuthority('ROLE_ADMIN')") // role base authorization
+	// @PreAuthorize("hasAuthority('ROLE_ADMIN')") // role base authorization
 	public ResponseEntity<?> deleteUser(@PathVariable("userid") Long userid) {
 
 		boolean result = service.deleteUser(userid);
@@ -173,6 +206,19 @@ public class UserController {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
 					.body(new Message("No user is currently logged in", "401"));
 		}
+	}
+
+	@GetMapping("/")
+	public ResponseEntity<?> getAllUsers() {
+		List<User> users = this.userService.getUsers();
+
+		for (User u : users) {
+			u.setPassword(null);
+			u.setUserName(null);
+
+		}
+
+		return ResponseEntity.ok(users);
 	}
 
 }

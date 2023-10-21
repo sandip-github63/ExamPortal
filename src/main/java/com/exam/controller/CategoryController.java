@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.exam.model.Category;
+import com.exam.response.DeleteResponse;
 import com.exam.service.CategoryService;
 
 @RestController
@@ -59,7 +60,7 @@ public class CategoryController {
 	@DeleteMapping("/{categoryId}")
 	public ResponseEntity<?> deleteCategory(@PathVariable("categoryId") Long categoryId) {
 		this.categoryService.deleteCategory(categoryId);
-		return ResponseEntity.ok("200");
+		return ResponseEntity.ok(new DeleteResponse("successfully deleted..", categoryId));
 
 	}
 

@@ -1,5 +1,6 @@
 package com.exam.serviceImpl;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -97,6 +98,12 @@ public class UserServiceImpl implements UserService {
 
 		return result;
 
+	}
+
+	@Override
+	public List<User> getUsers() {
+
+		return this.userRepo.findAll();
 	}
 
 }

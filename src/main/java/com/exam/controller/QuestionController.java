@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.exam.model.Question;
 import com.exam.model.Quiz;
 import com.exam.response.DeleteResponse;
+import com.exam.response.ResultOfQuiz;
 import com.exam.service.QuestionService;
 import com.exam.service.QuizService;
 
@@ -63,7 +65,7 @@ public class QuestionController {
 
 		Set<Question> questions = quiz.getQuestions();
 
-		List list = new ArrayList(questions);
+		List<Question> list = new ArrayList<>(questions);
 
 		if (list.size() > quiz.getNumberOfQuestions()) {
 
@@ -72,6 +74,12 @@ public class QuestionController {
 		}
 
 		Collections.shuffle(list);
+
+		// exclude answer field so that user not able to show answer of question
+
+		list.forEach(q -> {
+			q.setAnswer(null);
+		});
 
 		return ResponseEntity.ok(list);
 
@@ -114,6 +122,49 @@ public class QuestionController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("something went wrong");
 
 		}
+
+	}
+
+	// calculate quiz API
+
+	@PostMapping("/calculate-quiz")
+	public ResponseEntity<?> calculateQuiz(@RequestBody List<Question> questions) {
+
+		Integer marksPerQuestion = 0;
+		Integer marksGot = 0;
+		AtomicInteger correctAnswer = new AtomicInteger(0);
+		AtomicInteger attempted = new AtomicInteger(0);
+
+		try {
+			marksPerQuestion = questions.get(0).getQuiz().getMaxMarks() / questions.size();
+
+		} catch (NullPointerException e) {
+
+			e.printStackTrace();
+
+		}
+		questions.forEach(q -> {
+			System.out.println(q.getContent() + "  :" + q.getAnswer());
+
+			if (this.questionService.getQuestion(q.getQuesId()).getAnswer().equals(q.getGivenAnswer())) {
+
+				correctAnswer.incrementAndGet();
+
+			}
+			System.out.println("givenAnswer before condition : " + q.getGivenAnswer());
+
+			if (q.getGivenAnswer() != null) {
+				attempted.incrementAndGet();
+			}
+
+		});
+
+		marksGot = correctAnswer.get() * marksPerQuestion;
+
+		System.out.println("correctAnswer: " + correctAnswer + "  Attempted: " + attempted);
+
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(new ResultOfQuiz(marksGot, correctAnswer.get(), attempted.get()));
 
 	}
 

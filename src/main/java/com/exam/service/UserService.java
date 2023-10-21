@@ -1,5 +1,6 @@
 package com.exam.service;
 
+import java.util.List;
 import java.util.Set;
 
 import com.exam.model.User;
@@ -12,5 +13,7 @@ public interface UserService {
 	public User getUserByUserName(String userName);
 
 	public boolean deleteUser(Long userId);
+
+	public List<User> getUsers();
 
 }

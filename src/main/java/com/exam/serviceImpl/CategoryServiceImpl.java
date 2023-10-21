@@ -10,6 +10,8 @@ import com.exam.model.Category;
 import com.exam.repository.CategoryRepository;
 import com.exam.service.CategoryService;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class CategoryServiceImpl implements CategoryService {
 
@@ -43,12 +45,10 @@ public class CategoryServiceImpl implements CategoryService {
 	}
 
 	@Override
+	@Transactional
 	public void deleteCategory(Long categoryId) {
-		// TODO Auto-generated method stub
-		Category c = new Category();
-		c.setcId(categoryId);
 
-		this.categoryRepository.delete(c);
+		this.categoryRepository.deleteById(categoryId);
 
 	}
 

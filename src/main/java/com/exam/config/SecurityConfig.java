@@ -42,8 +42,8 @@ public class SecurityConfig {
 		System.out.println("inside securityfilterchain");
 
 		return http.csrf().disable().authorizeHttpRequests()
-				.requestMatchers("/user/", "/user/create", "/user/authenticate", "user/currentLoginUser", "/category/",
-						"/quiz/**", "/question/**", "/question/**")
+				.requestMatchers("/user/**", "/user/create", "/user/authenticate", "user/currentLoginUser",
+						"/category/**", "/quiz/**", "/question/**", "/question/**")
 				.permitAll().and().authorizeHttpRequests()
 				.requestMatchers("/user/**", "/category/**", "/question/**", "/quiz/**").authenticated().and()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
