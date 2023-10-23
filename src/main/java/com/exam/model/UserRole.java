@@ -1,5 +1,8 @@
 package com.exam.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -20,10 +23,12 @@ public class UserRole {
 
 	@ManyToOne
 	@JoinColumn(name = "role_id")
+	@JsonManagedReference
 	Role role;
 
 	@ManyToOne
 	@JoinColumn(name = "user_id")
+	@JsonBackReference
 	User user;
 
 	public UserRole() {

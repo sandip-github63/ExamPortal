@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,12 +30,14 @@ import com.exam.model.User;
 import com.exam.model.UserRole;
 import com.exam.request.AuthRequest;
 import com.exam.request.UserDto;
+import com.exam.request.UserRoleRequestDTO;
 import com.exam.response.Message;
 import com.exam.response.Message2;
 import com.exam.response.TokenResponse;
 import com.exam.response.UserWithAuthoritiesDTO;
 import com.exam.service.JwtService;
 import com.exam.service.RoleService;
+import com.exam.service.UserRoleService;
 import com.exam.service.UserService;
 
 @RestController
@@ -46,6 +49,9 @@ public class UserController {
 
 	@Autowired
 	private JwtService jwtService;
+
+	@Autowired
+	private UserRoleService userRoleService;
 
 	@Autowired
 	private AuthenticationManager authenticationManager;
@@ -219,6 +225,43 @@ public class UserController {
 		}
 
 		return ResponseEntity.ok(users);
+	}
+
+	// get Role by userId
+	@GetMapping("/role/{userId}")
+	public ResponseEntity<?> getUserRole(@PathVariable("userId") Long userId) {
+		List<UserRole> role = this.userRoleService.getRole(userId);
+
+		for (UserRole r : role) {
+			r.getUser().setUserName(null);
+			r.getUser().setPassword(null);
+
+		}
+
+		return ResponseEntity.ok(role);
+	}
+
+	// update Role by userRoleId
+
+	@PutMapping("/role")
+	public ResponseEntity<?> updateRoleOfUser(@RequestBody UserRoleRequestDTO userRole) {
+
+		System.out.println(userRole.toString());
+
+		User u = new User();
+
+		Role r = new Role();
+
+		UserRole ur = new UserRole();
+
+		u.setUserId(userRole.getUserId());
+		r.setRoleName(userRole.getRoleName());
+
+		ur.setRole(r);
+		ur.setUser(u);
+		ur.setUserRoleId(userRole.getUserRoleId());
+
+		return ResponseEntity.ok(this.userRoleService.updateRole(ur));
 	}
 
 }
