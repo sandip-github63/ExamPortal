@@ -34,8 +34,6 @@ public class UserServiceImpl implements UserService {
 
 		System.out.println("inside createUser method...");
 
-		// to create new user check whether user is already exist in database
-
 		User u = this.userRepo.findByUserName(user.getUserName());
 
 		try {
@@ -46,22 +44,16 @@ public class UserServiceImpl implements UserService {
 				throw new CustomException("user is already exits...");
 
 			} else {
-
-				// create new user means save data into database
-
 				for (UserRole uRole : userRoles) {
 
-					roleRepo.save(uRole.getRole()); // get Role and store in database
+					roleRepo.save(uRole.getRole());
 
 					System.out.println("user Roles save succssfully..." + uRole.getRole().getRoleId());
 
 				}
 
-				// store user in database
+				user.getuRole().addAll(userRoles);
 
-				user.getuRole().addAll(userRoles); // user's userRole object set
-
-				// password store in encrypt
 				user.setPassword(passwordEncoder.encode(user.getPassword()));
 
 				u1 = userRepo.save(user);
@@ -85,7 +77,6 @@ public class UserServiceImpl implements UserService {
 
 	public boolean deleteUser(Long userId) {
 
-		// check does userId exit in database
 		boolean result = false;
 
 		Optional<User> user = userRepo.findById(userId);

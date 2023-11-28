@@ -11,8 +11,6 @@ import com.exam.model.UserRole;
 @Repository
 public interface UserRoleRepository extends JpaRepository<UserRole, Long> {
 
-	// public List<UserRole> findByUser(User user)
-
 	public List<UserRole> findByUser(User user);
 
 }

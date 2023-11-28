@@ -19,8 +19,8 @@ import com.exam.response.DeleteResponse;
 import com.exam.service.CategoryService;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/category")
-@CrossOrigin("*")
 public class CategoryController {
 
 	@Autowired

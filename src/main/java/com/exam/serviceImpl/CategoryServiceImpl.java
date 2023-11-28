@@ -34,13 +34,11 @@ public class CategoryServiceImpl implements CategoryService {
 
 	@Override
 	public Set<Category> getCategories() {
-		// TODO Auto-generated method stub
 		return new LinkedHashSet<>(this.categoryRepository.findAll());
 	}
 
 	@Override
 	public Category getCategoriesById(Long categoryId) {
-		// TODO Auto-generated method stub
 		return this.categoryRepository.findById(categoryId).get();
 	}
 

@@ -19,15 +19,12 @@ public class QuestionServiceImpl implements QuestionService {
 
 	@Override
 	public Question addQuestion(Question question) {
-		// TODO Auto-generated method stub
 		return this.questionRepository.save(question);
 
 	}
 
 	@Override
 	public Question updateQuestion(Question question) {
-		// TODO Auto-generated method stub
-
 		Quiz quiz = this.questionRepository.findById(question.getQuesId()).get().getQuiz();
 		question.setQuiz(quiz);
 
@@ -37,21 +34,17 @@ public class QuestionServiceImpl implements QuestionService {
 
 	@Override
 	public Set<Question> getQuestions() {
-		// TODO Auto-generated method stub
 		return new HashSet<>(this.questionRepository.findAll());
 	}
 
 	@Override
 	public Question getQuestion(Long questionId) {
-		// TODO Auto-generated method stub
 		return this.questionRepository.findById(questionId).get();
 	}
 
 	@Override
 	public void deleteQuestion(Long questionId) {
-		// TODO Auto-generated method stub
 		Question d = new Question();
-		// d.setQuizId(questionId);
 		d.setQuesId(questionId);
 
 		this.questionRepository.delete(d);
@@ -60,7 +53,6 @@ public class QuestionServiceImpl implements QuestionService {
 
 	@Override
 	public Set<Question> getQuestionsOfQuiz(Quiz quiz) {
-		// TODO Auto-generated method stub
 		return this.questionRepository.findByQuiz(quiz);
 	}
 

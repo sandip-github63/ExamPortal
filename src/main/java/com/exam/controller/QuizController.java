@@ -20,14 +20,12 @@ import com.exam.response.DeleteResponse;
 import com.exam.service.QuizService;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/quiz")
-@CrossOrigin("*")
 public class QuizController {
 
 	@Autowired
 	private QuizService quizService;
-
-	// Add quiz
 
 	@PostMapping("/")
 	public ResponseEntity<?> addQuiz(@RequestBody Quiz quiz) {
@@ -36,8 +34,6 @@ public class QuizController {
 		return ResponseEntity.ok(this.quizService.addQuiz(quiz));
 
 	}
-
-	// update Quiz
 
 	@PutMapping("/")
 	public ResponseEntity<?> updateQuiz(@RequestBody Quiz quiz) {
@@ -77,8 +73,6 @@ public class QuizController {
 		return ResponseEntity.ok(this.quizService.getQuzzesOfCategory(c));
 
 	}
-
-	// get Active Quizzes
 
 	@GetMapping("/active")
 	public ResponseEntity<?> getActiveQuizzes() {

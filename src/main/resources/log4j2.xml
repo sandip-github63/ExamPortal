@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Configuration status="INFO">	
+	<Appenders>
+	    
+	    <File name="LogToFile" fileName="/var/log/myapp/application.log">
+	    
+	        <PatternLayout>
+			<!-- custome formate to see the log message -->
+			  <Pattern>%d - %c [%M] - (%p) %m %n </Pattern>
+			
+		    </PatternLayout>
+			
+	    </File>
+	   
+	</Appenders>	
+	
+	<Loggers>
+        <Root level="info">
+            <AppenderRef ref="LogToFile"/>
+        </Root>
+    </Loggers>
+    
+</Configuration>	

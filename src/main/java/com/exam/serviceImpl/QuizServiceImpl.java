@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,8 @@ import jakarta.transaction.Transactional;
 @Service
 public class QuizServiceImpl implements QuizService {
 
+	private static final Logger logger = LogManager.getLogger(QuizServiceImpl.class);
+
 	@Autowired
 	QuizRepository quizRepository;
 
@@ -27,20 +31,11 @@ public class QuizServiceImpl implements QuizService {
 
 	@Override
 	public Quiz addQuiz(Quiz quiz) {
-		// TODO Auto-generated method stub
 		return this.quizRepository.save(quiz);
 	}
 
 	@Override
 	public Quiz updateQuiz(Quiz quiz) {
-		// TODO Auto-generated method stub
-
-		// if request contain cId as null then it will update cId as null in table hence
-		// integrity remove
-
-		// Category category =
-		// this.quizRepository.findById(quiz.getCategory().getcId()).get().getCategory();
-
 		try {
 			Optional<Category> data = this.categoryRepository.findById(quiz.getCategory().getcId());
 
@@ -59,13 +54,14 @@ public class QuizServiceImpl implements QuizService {
 
 	@Override
 	public Set<Quiz> getQuizzes() {
-		// TODO Auto-generated method stub
+
+		this.logger.info("Get all Quizzes run....");
+
 		return new HashSet<>(this.quizRepository.findAll());
 	}
 
 	@Override
 	public Quiz getQuiz(Long quizId) {
-		// TODO Auto-generated method stub
 		return this.quizRepository.findById(quizId).get();
 
 	}
@@ -80,7 +76,6 @@ public class QuizServiceImpl implements QuizService {
 
 	@Override
 	public List<Quiz> getQuzzesOfCategory(Category c) {
-		// TODO Auto-generated method stub
 		return this.quizRepository.findBycategory(c);
 	}
 

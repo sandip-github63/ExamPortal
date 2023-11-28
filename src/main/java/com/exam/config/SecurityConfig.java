@@ -27,29 +27,20 @@ public class SecurityConfig {
 	@Autowired
 	private JwtAuthFilter authFilter;
 
-	// Authentication
 	@Bean
 	public UserDetailsService userDetailService() {
 
 		return new ChildUserDetailsService();
 	}
 
-	// Authorization logic
-
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
-		System.out.println("inside securityfilterchain");
-
-		return http.csrf().disable().authorizeHttpRequests()
-				.requestMatchers("/user/**", "/user/create", "/user/authenticate", "user/currentLoginUser",
-						"/category/**", "/quiz/**", "/question/**", "/question/**")
-				.permitAll().and().authorizeHttpRequests()
+		return http.csrf().disable().cors().and().authorizeHttpRequests()
+				.requestMatchers("/user/authenticate", "/user/").permitAll().and().authorizeHttpRequests()
 				.requestMatchers("/user/**", "/category/**", "/question/**", "/quiz/**").authenticated().and()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 				.authenticationProvider(authenticationProvider())
 				.addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class).build();
-
 	}
 
 	@Bean
@@ -78,7 +69,5 @@ public class SecurityConfig {
 
 		return config.getAuthenticationManager();
 	}
-
-	// cross origin config
 
 }

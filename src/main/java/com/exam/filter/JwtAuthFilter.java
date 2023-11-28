@@ -32,18 +32,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 			throws ServletException, IOException {
 
 		String token = null;
-		String username = null;
 
-		// get Token Bearer
-		// eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFqdSIsImlhdCI6MTY5NTkzNDk5MCwiZXhwIjoxNjk1OTM2NzkwfQ.ccSypfqD2LzSnxADFAUCovg707ajg_3v0tYeLespYy4
+		String username = null;
 
 		String authHeader = request.getHeader("Authorization");
 
 		System.out.println("header  :" + authHeader);
 
 		if (authHeader != null && authHeader.startsWith("Bearer ")) {
-			// split Bearer and only get actual token
-			// eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFqdSIsImlhdCI6MTY5NTkzNDk5MCwiZXhwIjoxNjk1OTM2NzkwfQ.ccSypfqD2LzSnxADFAUCovg707ajg_3v0tYeLespYy4
 
 			token = authHeader.substring(7);
 
@@ -57,11 +53,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
 			UserDetails userDetails = childUserDetailsService.loadUserByUsername(username);
 
-			// here we have token username and username from database now we validate the
-			// token
-
 			if (jwtService.validateToken(token, userDetails)) {
-				// user validate successfully
+
 				UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails,
 						null, userDetails.getAuthorities());
 
@@ -74,7 +67,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 		}
 
 		filterChain.doFilter(request, response);
-
 	}
 
 }

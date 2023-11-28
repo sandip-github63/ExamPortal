@@ -30,7 +30,6 @@ public class DeleteResponse {
 
 	public DeleteResponse() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 }

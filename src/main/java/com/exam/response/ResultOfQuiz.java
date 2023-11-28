@@ -41,7 +41,6 @@ public class ResultOfQuiz {
 
 	public ResultOfQuiz() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 }

@@ -27,8 +27,8 @@ import com.exam.service.QuestionService;
 import com.exam.service.QuizService;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/question")
-@CrossOrigin("*")
 public class QuestionController {
 
 	@Autowired
@@ -44,8 +44,6 @@ public class QuestionController {
 
 	}
 
-	// update the question
-
 	@PutMapping("/")
 	public ResponseEntity<?> updateQuestion(@RequestBody Question question) {
 
@@ -53,13 +51,8 @@ public class QuestionController {
 
 	}
 
-	// get all question of any quid show only user dashboard not admin dashboard
-
 	@GetMapping("/quiz/{qId}")
 	public ResponseEntity<?> getQuestionOfQuizWithLimit(@PathVariable("qId") Long qId) {
-
-		// how much question you want to get ? ans->get question according to quiz's
-		// numberOfQuestions
 
 		Quiz quiz = this.quizService.getQuiz(qId);
 
@@ -75,8 +68,6 @@ public class QuestionController {
 
 		Collections.shuffle(list);
 
-		// exclude answer field so that user not able to show answer of question
-
 		list.forEach(q -> {
 			q.setAnswer(null);
 		});
@@ -84,8 +75,6 @@ public class QuestionController {
 		return ResponseEntity.ok(list);
 
 	}
-
-	// get all question of quiz
 
 	@GetMapping("/quiz/all/{qId}")
 	public ResponseEntity<?> getQuestionOfQuiz(@PathVariable("qId") Long qId) {
@@ -98,15 +87,11 @@ public class QuestionController {
 		return ResponseEntity.ok(questionsOfQuiz);
 	}
 
-	// get single question
-
 	@GetMapping("/{quesId}")
 	public ResponseEntity<?> getQuestion(@PathVariable("quesId") Long quesId) {
 
 		return ResponseEntity.ok(this.questionService.getQuestion(quesId));
 	}
-
-	// delete question by questionId
 
 	@DeleteMapping("/{quesId}")
 	public ResponseEntity<?> deleteQuestion(@PathVariable("quesId") Long quesId) {
@@ -124,8 +109,6 @@ public class QuestionController {
 		}
 
 	}
-
-	// calculate quiz API
 
 	@PostMapping("/calculate-quiz")
 	public ResponseEntity<?> calculateQuiz(@RequestBody List<Question> questions) {

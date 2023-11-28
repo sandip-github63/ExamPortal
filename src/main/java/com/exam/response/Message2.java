@@ -7,7 +7,6 @@ public class Message2 {
 	private UserWithAuthoritiesDTO userWithAuthorities;
 
 	public Message2(String message, String status, UserWithAuthoritiesDTO userWithAuthorities) {
-		// TODO Auto-generated constructor stub
 		this.message = message;
 		this.status = status;
 		this.userWithAuthorities = userWithAuthorities;

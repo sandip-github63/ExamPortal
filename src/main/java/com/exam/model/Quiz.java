@@ -122,7 +122,6 @@ public class Quiz {
 
 	public Quiz() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override

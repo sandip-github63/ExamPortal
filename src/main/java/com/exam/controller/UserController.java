@@ -41,8 +41,8 @@ import com.exam.service.UserRoleService;
 import com.exam.service.UserService;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/user")
-@CrossOrigin("*")
 public class UserController {
 
 	private final UserService userService;
@@ -79,7 +79,6 @@ public class UserController {
 		Role r1;
 
 		if (userReq.getRole() != null && userReq.getRole().equals("ROLE_ADMIN")) {
-			// get ROLE ADMIN OBJECT
 
 			System.out.println("user role is ........:" + userReq.getRole());
 
@@ -111,7 +110,6 @@ public class UserController {
 
 		userRoleSet.add(userRole);
 
-		// service call
 		User u = service.createUser(user, userRoleSet);
 
 		if (u == null) {
@@ -124,7 +122,6 @@ public class UserController {
 	}
 
 	@GetMapping("/{username}")
-	// @PreAuthorize("hasAuthority('ROLE_ADMIN')") // role base authorization
 	public ResponseEntity<?> getUser(@PathVariable("username") String username) {
 
 		User user = service.getUserByUserName(username);
@@ -140,7 +137,6 @@ public class UserController {
 	}
 
 	@DeleteMapping("/{userid}")
-	// @PreAuthorize("hasAuthority('ROLE_ADMIN')") // role base authorization
 	public ResponseEntity<?> deleteUser(@PathVariable("userid") Long userid) {
 
 		boolean result = service.deleteUser(userid);
@@ -155,20 +151,11 @@ public class UserController {
 
 	}
 
-	// this handler is responsible to take username and password from client and
-	// generate token
-
 	@PostMapping("/authenticate")
 	public ResponseEntity<TokenResponse> authenticateAndGetToken(@RequestBody AuthRequest request) {
 
 		Authentication authenticate = authenticationManager
 				.authenticate(new UsernamePasswordAuthenticationToken(request.getUserName(), request.getPassword()));
-
-		// authenticationManger send UsernamePasswordToken object to ProviderManger and
-		// providerManager check with AuthenticationProvider and AuthenticationProvider
-		// check the usercrediation by comparing actual and database by calling
-		// UserDetailsService
-		// and if authentication success or failure then it return Authentication object
 
 		if (authenticate.isAuthenticated()) {
 
@@ -182,10 +169,7 @@ public class UserController {
 
 	}
 
-	// Get current logged user detail
-
 	@GetMapping("/currentLoginUser")
-//	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 	public ResponseEntity<?> getCurrentUser() {
 
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -193,10 +177,9 @@ public class UserController {
 		if (authentication != null && authentication.isAuthenticated()
 				&& !authentication.getPrincipal().equals("anonymousUser")) {
 			String currentUsername = authentication.getName();
-			// get user
+
 			User currentUser = userService.getUserByUserName(currentUsername);
 
-			// get user authority
 			Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
 
 			List<String> authorityNames = authorities.stream().map(GrantedAuthority::getAuthority)
@@ -227,7 +210,6 @@ public class UserController {
 		return ResponseEntity.ok(users);
 	}
 
-	// get Role by userId
 	@GetMapping("/role/{userId}")
 	public ResponseEntity<?> getUserRole(@PathVariable("userId") Long userId) {
 		List<UserRole> role = this.userRoleService.getRole(userId);
@@ -240,8 +222,6 @@ public class UserController {
 
 		return ResponseEntity.ok(role);
 	}
-
-	// update Role by userRoleId
 
 	@PutMapping("/role")
 	public ResponseEntity<?> updateRoleOfUser(@RequestBody UserRoleRequestDTO userRole) {
@@ -262,6 +242,11 @@ public class UserController {
 		ur.setUserRoleId(userRole.getUserRoleId());
 
 		return ResponseEntity.ok(this.userRoleService.updateRole(ur));
+	}
+
+	@GetMapping("/test")
+	public String test() {
+		return "Your application is working fine";
 	}
 
 }
