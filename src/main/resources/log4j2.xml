@@ -1,24 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>
 
-<Configuration status="INFO">	
-	<Appenders>
-	    
-	    <File name="LogToFile" fileName="/var/log/myapp/application.log">
-	    
-	        <PatternLayout>
-			<!-- custome formate to see the log message -->
-			  <Pattern>%d - %c [%M] - (%p) %m %n </Pattern>
-			
-		    </PatternLayout>
-			
-	    </File>
-	   
-	</Appenders>	
-	
-	<Loggers>
+        <RollingFile name="File" fileName="logs/app.log"
+                     filePattern="logs/app-%d{MM-dd-yyyy}-%i.log.gz">
+            <PatternLayout>
+                <Pattern>%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
         <Root level="info">
-            <AppenderRef ref="LogToFile"/>
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="File"/>
         </Root>
     </Loggers>
-    
-</Configuration>	
+</Configuration>

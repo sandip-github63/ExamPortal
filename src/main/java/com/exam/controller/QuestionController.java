@@ -3,6 +3,7 @@ package com.exam.controller;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -21,6 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.exam.model.Question;
 import com.exam.model.Quiz;
+import com.exam.request.QuesToAnswer;
+import com.exam.response.AnswerOfQuestionMessage;
 import com.exam.response.DeleteResponse;
 import com.exam.response.ResultOfQuiz;
 import com.exam.service.QuestionService;
@@ -149,6 +152,15 @@ public class QuestionController {
 		return ResponseEntity.status(HttpStatus.OK)
 				.body(new ResultOfQuiz(marksGot, correctAnswer.get(), attempted.get()));
 
+	}
+
+	@PostMapping("/get-answer")
+	public ResponseEntity<?> getAnswerByQuestions(@RequestBody QuesToAnswer quesToAnswer) {
+
+		Map<Long, String> answer = this.questionService.getAnswerOfQuestions(quesToAnswer);
+
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(new AnswerOfQuestionMessage("Got the Answer of questions", answer));
 	}
 
 }

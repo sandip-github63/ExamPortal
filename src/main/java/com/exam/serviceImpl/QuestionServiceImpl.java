@@ -1,6 +1,10 @@
 package com.exam.serviceImpl;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.exam.model.Question;
 import com.exam.model.Quiz;
 import com.exam.repository.QuestionRepository;
+import com.exam.request.QuesToAnswer;
 import com.exam.service.QuestionService;
 
 @Service
@@ -54,6 +59,22 @@ public class QuestionServiceImpl implements QuestionService {
 	@Override
 	public Set<Question> getQuestionsOfQuiz(Quiz quiz) {
 		return this.questionRepository.findByQuiz(quiz);
+	}
+
+	@Override
+	public Map<Long, String> getAnswerOfQuestions(QuesToAnswer ques) {
+		List<Long> quesId = ques.getQuesId();
+
+		Map<Long, String> answer = new HashMap<Long, String>();
+
+		for (Long q : quesId) {
+			Optional<Question> question = this.questionRepository.findById(q);
+			if (question.isPresent()) {
+				answer.put(q, question.get().getAnswer());
+			}
+		}
+
+		return answer;
 	}
 
 }
