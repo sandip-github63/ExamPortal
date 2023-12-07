@@ -20,7 +20,7 @@ import com.exam.response.DeleteResponse;
 import com.exam.service.QuizService;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "*")
 @RequestMapping("/quiz")
 public class QuizController {
 

@@ -36,9 +36,9 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		return http.csrf().disable().cors().and().authorizeHttpRequests()
-				.requestMatchers("/user/authenticate", "/user/").permitAll().and().authorizeHttpRequests()
-				.requestMatchers("/user/**", "/category/**", "/question/**", "/quiz/**").authenticated().and()
-				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+				.requestMatchers("/user/authenticate", "/user/register", "/user/test").permitAll().and()
+				.authorizeHttpRequests().requestMatchers("/user/**", "/category/**", "/question/**", "/quiz/**")
+				.authenticated().and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 				.authenticationProvider(authenticationProvider())
 				.addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class).build();
 	}

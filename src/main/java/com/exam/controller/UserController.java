@@ -41,7 +41,7 @@ import com.exam.service.UserRoleService;
 import com.exam.service.UserService;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "*")
 @RequestMapping("/user")
 public class UserController {
 
@@ -67,7 +67,7 @@ public class UserController {
 	@Autowired
 	RoleService roleService;
 
-	@PostMapping("/")
+	@PostMapping("/register")
 	public ResponseEntity<?> createUser(@RequestBody UserDto userReq) {
 
 		User user = new User(userReq.getFirstName(), userReq.getLastName(), userReq.getEmail(), userReq.getUserName(),

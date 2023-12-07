@@ -30,7 +30,7 @@ import com.exam.service.QuestionService;
 import com.exam.service.QuizService;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "*")
 @RequestMapping("/question")
 public class QuestionController {
 

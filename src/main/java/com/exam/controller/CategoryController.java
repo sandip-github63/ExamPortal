@@ -19,7 +19,7 @@ import com.exam.response.DeleteResponse;
 import com.exam.service.CategoryService;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "*")
 @RequestMapping("/category")
 public class CategoryController {
 
