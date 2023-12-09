@@ -37,7 +37,8 @@ public class SecurityConfig {
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		return http.csrf().disable().cors().and().authorizeHttpRequests()
 				.requestMatchers("/user/authenticate", "/user/register", "/user/test").permitAll().and()
-				.authorizeHttpRequests().requestMatchers("/user/**", "/category/**", "/question/**", "/quiz/**")
+				.authorizeHttpRequests()
+				.requestMatchers("/user/**", "/category/**", "/question/**", "/quiz/**", "/api/reset-password/**")
 				.authenticated().and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 				.authenticationProvider(authenticationProvider())
 				.addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class).build();

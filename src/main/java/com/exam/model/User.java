@@ -1,5 +1,6 @@
 package com.exam.model;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -50,6 +51,12 @@ public class User {
 
 	@Column(name = "profile")
 	private String profile;
+
+	@Column(name = "otp")
+	private String otp;
+
+	@Column(name = "otpExpirationTime")
+	private LocalDateTime otpExpirationTime;
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JsonIgnore
@@ -121,6 +128,22 @@ public class User {
 
 	public void setAbout(String about) {
 		this.about = about;
+	}
+
+	public String getOtp() {
+		return otp;
+	}
+
+	public void setOtp(String otp) {
+		this.otp = otp;
+	}
+
+	public LocalDateTime getOtpExpirationTime() {
+		return otpExpirationTime;
+	}
+
+	public void setOtpExpirationTime(LocalDateTime otpExpirationTime) {
+		this.otpExpirationTime = otpExpirationTime;
 	}
 
 	public User(Long userId, String firstName, String lastName, String email, String userName, String phone,
