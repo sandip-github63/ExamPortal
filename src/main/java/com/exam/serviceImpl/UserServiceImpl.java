@@ -15,6 +15,9 @@ import com.exam.repository.RoleRepository;
 import com.exam.repository.UserRepository;
 import com.exam.service.UserService;
 
+import io.micrometer.common.util.StringUtils;
+import jakarta.transaction.Transactional;
+
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -95,6 +98,30 @@ public class UserServiceImpl implements UserService {
 	public List<User> getUsers() {
 
 		return this.userRepo.findAll();
+	}
+
+	@Override
+	@Transactional
+	public boolean updatePasswordByEmail(String email, String password) {
+		try {
+			if (StringUtils.isBlank(email)) {
+				return false; // or throw an IllegalArgumentException
+			}
+
+			Optional<User> userOptional = this.userRepo.findByEmail(email);
+			if (userOptional.isPresent()) {
+				User user = userOptional.get();
+				user.setPassword(this.passwordEncoder.encode(password));
+				this.userRepo.save(user); // Update only the password in the repository
+				return true; // Return true since the user was present and the password was updated
+			}
+
+			return false; // Return false if the user was not present
+		} catch (Exception e) {
+			// Log the exception or handle it appropriately
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 }

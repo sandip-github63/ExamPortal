@@ -6,11 +6,14 @@ import java.util.Optional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,121 +21,159 @@ import org.springframework.web.bind.annotation.RestController;
 import com.exam.model.User;
 import com.exam.repository.UserRepository;
 import com.exam.request.ResetPasswordRequest;
+import com.exam.request.UpdatePasswordRequest;
+import com.exam.request.ResetPasswordRequest;
+import com.exam.response.GenericMessage;
 import com.exam.response.ResetPasswordResponse;
+
 import com.exam.service.ResetPasswordService;
+import com.exam.service.UserService;
 
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/api/reset-password")
 public class ResetPasswordController {
-
+	
 	@Autowired
-	private ResetPasswordService resetPasswordService;
-
+	private  ResetPasswordService resetPasswordService;
+	
 	@Autowired
-	private UserRepository userRepository;
-
+	private  UserRepository userRepository;
+	
+	@Autowired
+	private  UserService userService;
+	
+	
 	@PostMapping("/generate-otp")
-	public ResponseEntity<ResetPasswordResponse> generateOTP(@RequestBody @Valid ResetPasswordRequest request,
-			BindingResult bindingResult) {
-		// Validate request
-		if (bindingResult.hasErrors()) {
-			return ResponseEntity.badRequest().body(buildErrorResponse(bindingResult));
-		}
+    public ResponseEntity<ResetPasswordResponse> generateOTP(
+            @RequestBody @Valid ResetPasswordRequest request,
+            BindingResult bindingResult
+    ) {
+        // Validate request
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(buildErrorResponse(bindingResult));
+        }
 
-		String email = request.getEmail();
+        String email = request.getEmail();
 
-		// Check if the email exists in the database
+        // Check if the email exists in the database 
+        
+        Optional<User> user = this.userRepository.findByEmail(email);
+        
+        // If the email exists, generate OTP and send it via email
+        if(user.isPresent()) {
+       
+        try {
+            String otp = resetPasswordService.generateOTP();
+            resetPasswordService.sendOTPByEmail(email, otp);
 
-		Optional<User> user = this.userRepository.findByEmail(email);
+            ResetPasswordResponse response = new ResetPasswordResponse();
+            response.setMessage("OTP sent successfully");
+            
+            // Save OTP in the database
+            user.ifPresent(u -> {
+                u.setOtp(otp);
+                u.setOtpExpirationTime(LocalDateTime.now().plusMinutes(5));
+                this.userRepository.save(u);
+            });
 
-		// If the email exists, generate OTP and send it via email
-		if (user.isPresent()) {
+            return ResponseEntity.ok(response);
+        } catch (MailException e) {
+            ResetPasswordResponse response = new ResetPasswordResponse();
+            response.setMessage("Failed to send OTP. Please try again.");
+            e.printStackTrace();
 
-			try {
-				String otp = resetPasswordService.generateOTP();
-				resetPasswordService.sendOTPByEmail(email, otp);
+            return ResponseEntity.status(500).body(response);
+          }
+        } 
+        
+        else {
+        	ResetPasswordResponse response = new ResetPasswordResponse();
+            response.setMessage("If the email exists in our system, we will send a password reset OTP to it. Please check your email.");
+            return ResponseEntity.status(200).body(response);
+        }
+    }
 
-				ResetPasswordResponse response = new ResetPasswordResponse();
-				response.setMessage("OTP sent successfully");
+    private ResetPasswordResponse buildErrorResponse(BindingResult bindingResult) {
+        ResetPasswordResponse response = new ResetPasswordResponse();
+        response.setMessage("Validation failed. Please check your request.");
 
-				// Save OTP in the database
-				user.ifPresent(u -> {
-					u.setOtp(otp);
-					u.setOtpExpirationTime(LocalDateTime.now().plusMinutes(5));
-					this.userRepository.save(u);
-				});
+        bindingResult.getFieldErrors().forEach(error ->
+                response.addValidationError(error.getField(), error.getDefaultMessage()));
 
-				return ResponseEntity.ok(response);
-			} catch (MailException e) {
-				ResetPasswordResponse response = new ResetPasswordResponse();
-				response.setMessage("Failed to send OTP. Please try again.");
-				e.printStackTrace();
+        return response;
+    }
+    
+    @PostMapping("/validate-otp")
+    public ResponseEntity<ResetPasswordResponse> validateOTP(
+            @RequestBody @Valid ResetPasswordRequest request,
+            BindingResult bindingResult
+    ) {
+        // Validate request
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(buildErrorResponse(bindingResult));
+        }
 
-				return ResponseEntity.status(500).body(response);
-			}
-		}
+        String email = request.getEmail();
+        String enteredOTP = request.getOtp();
 
-		else {
-			ResetPasswordResponse response = new ResetPasswordResponse();
-			response.setMessage(
-					"If the email exists in our system, we will send a password reset OTP to it. Please check your email.");
-			return ResponseEntity.status(200).body(response);
-		}
-	}
+        // Check if the email exists in the database
+        Optional<User> userOptional = this.userRepository.findByEmail(email);
 
-	private ResetPasswordResponse buildErrorResponse(BindingResult bindingResult) {
-		ResetPasswordResponse response = new ResetPasswordResponse();
-		response.setMessage("Validation failed. Please check your request.");
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            String storedOTP = user.getOtp(); // Assuming you have a field in the User entity to store OTP
+            LocalDateTime expirationTime = user.getOtpExpirationTime();
 
-		bindingResult.getFieldErrors()
-				.forEach(error -> response.addValidationError(error.getField(), error.getDefaultMessage()));
+            // Validate the entered OTP and check expiration time
+            if (expirationTime.isAfter(LocalDateTime.now()) && enteredOTP.equals(storedOTP)) {
+                // OTP is valid
+                ResetPasswordResponse response = new ResetPasswordResponse();
+                response.setMessage("OTP is valid");
+                return ResponseEntity.ok(response);
+            } else if (expirationTime.isBefore(LocalDateTime.now())) {
+                // OTP has expired
+                ResetPasswordResponse response = new ResetPasswordResponse();
+                response.setMessage("OTP has expired. Please request a new one.");
+                return ResponseEntity.status(400).body(response);
+            } else {
+                // Invalid OTP
+                ResetPasswordResponse response = new ResetPasswordResponse();
+                response.setMessage("Invalid OTP. Please try again.");
+                return ResponseEntity.status(400).body(response);
+            }
+        } else {
+            // User not found
+            ResetPasswordResponse response = new ResetPasswordResponse();
+            response.setMessage("User not found. Please check your email and try again.");
+            return ResponseEntity.status(404).body(response);
+        }
+    }
+    
+    //update UserPasswordByEmailId	
+  	@PutMapping("/update-password")
+  	public ResponseEntity<?> updateUserPasswordByEmail(@RequestBody UpdatePasswordRequest request) {
+  		GenericMessage<Void> response = new GenericMessage<>();
+  		if (isValidRequest(request)) {  	    	
+  	        boolean result = userService.updatePasswordByEmail(request.getEmail(), request.getNewPassword());
+  	        if (result) {
+  	        	
+  	            response.setMessage("Password Updated..");
+  	            return ResponseEntity.ok(response);
+  	        } else {
+  	            response.setMessage("Email Id not Found");  	          
+  	            return ResponseEntity.status(404).body(response);
+  	        }
+  	    } else {
+  	    	    response.setMessage("Bad Request....");  	          
+	            return ResponseEntity.status(400).body(response);
+  	    }
+  	}
 
-		return response;
-	}
-
-	@PostMapping("/validate-otp")
-	public ResponseEntity<ResetPasswordResponse> validateOTP(@RequestBody @Valid ResetPasswordRequest request,
-			BindingResult bindingResult) {
-		// Validate request
-		if (bindingResult.hasErrors()) {
-			return ResponseEntity.badRequest().body(buildErrorResponse(bindingResult));
-		}
-
-		String email = request.getEmail();
-		String enteredOTP = request.getOtp();
-
-		// Check if the email exists in the database
-		Optional<User> userOptional = this.userRepository.findByEmail(email);
-
-		if (userOptional.isPresent()) {
-			User user = userOptional.get();
-			String storedOTP = user.getOtp(); // Assuming you have a field in the User entity to store OTP
-			LocalDateTime expirationTime = user.getOtpExpirationTime();
-
-			// Validate the entered OTP and check expiration time
-			if (expirationTime.isAfter(LocalDateTime.now()) && enteredOTP.equals(storedOTP)) {
-				// OTP is valid
-				ResetPasswordResponse response = new ResetPasswordResponse();
-				response.setMessage("OTP is valid");
-				return ResponseEntity.ok(response);
-			} else if (expirationTime.isBefore(LocalDateTime.now())) {
-				// OTP has expired
-				ResetPasswordResponse response = new ResetPasswordResponse();
-				response.setMessage("OTP has expired. Please request a new one.");
-				return ResponseEntity.status(400).body(response);
-			} else {
-				// Invalid OTP
-				ResetPasswordResponse response = new ResetPasswordResponse();
-				response.setMessage("Invalid OTP. Please try again.");
-				return ResponseEntity.status(400).body(response);
-			}
-		} else {
-			// User not found
-			ResetPasswordResponse response = new ResetPasswordResponse();
-			response.setMessage("User not found. Please check your email and try again.");
-			return ResponseEntity.status(404).body(response);
-		}
-	}
-
+  	private boolean isValidRequest(UpdatePasswordRequest request) {
+  	    return request.getEmail() != null &&
+  	           request.getNewPassword() != null &&
+  	           request.getConfirmPassword() != null &&
+  	           request.getNewPassword().equals(request.getConfirmPassword());
+  	}
 }

@@ -16,4 +16,6 @@ public interface UserService {
 
 	public List<User> getUsers();
 
+	public boolean updatePasswordByEmail(String email, String password);
+
 }
